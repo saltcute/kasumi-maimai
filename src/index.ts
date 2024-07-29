@@ -1,9 +1,8 @@
 import Kasumi, { BaseMenu } from "kasumi.js";
-import "./event";
-import RepeatKmdCommand from "commands/kmd";
+import Best50Command from "@/commands/b50";
 
-export default class AppMenu extends BaseMenu {
-    constructor(name: string = "app") {
+export default class MaiMenu extends BaseMenu {
+    constructor(name: string = "mai") {
         super();
         this.name = name;
     }
@@ -11,6 +10,6 @@ export default class AppMenu extends BaseMenu {
     init(client: Kasumi<any>, loggerSequence: string[]): void {
         super.init(client, loggerSequence);
 
-        this.load(new RepeatKmdCommand());
+        this.load(new Best50Command());
     }
 }
