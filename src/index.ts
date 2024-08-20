@@ -1,7 +1,8 @@
 import Kasumi, { BaseMenu } from "kasumi.js";
 import Best50Command from "@/commands/b50";
+import { CustomStorage } from "./config/type";
 
-export default class MaiMenu extends BaseMenu {
+export default class MaiMenu extends BaseMenu<Kasumi<CustomStorage>> {
     constructor(name: string = "mai") {
         super();
         this.name = name;

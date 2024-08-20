@@ -1,0 +1,144 @@
+{
+    "displayName": "maimai でらっくす BUDDiES PLUS, 9:16",
+    "name": "jp-buddiesplus-portrait",
+    "width": 1560,
+    "height": 2315,
+    "sprites": {
+        "achievement": {
+            "d": "achievement/d.png",
+            "c": "achievement/c.png",
+            "b": "achievement/b.png",
+            "bb": "achievement/bb.png",
+            "bbb": "achievement/bbb.png",
+            "a": "achievement/a.png",
+            "aa": "achievement/aa.png",
+            "aaa": "achievement/aaa.png",
+            "s": "achievement/s.png",
+            "sp": "achievement/sp.png",
+            "ss": "achievement/ss.png",
+            "ssp": "achievement/ssp.png",
+            "sss": "achievement/sss.png",
+            "sssp": "achievement/sssp.png"
+        },
+        "mode": {
+            "standard": "mode/standard.png",
+            "dx": "mode/dx.png"
+        },
+        "milestone": {
+            "ap": "milestone/ap.png",
+            "app": "milestone/app.png",
+            "fc": "milestone/fc.png",
+            "fcp": "milestone/fcp.png",
+            "fdx": "milestone/fdx.png",
+            "fdxp": "milestone/fdxp.png",
+            "fs": "milestone/fs.png",
+            "fsp": "milestone/fsp.png",
+            "sync": "milestone/sync.png",
+            "none": "milestone/none.png"
+        },
+        "dxRating": {
+            "white": "dxRating/white.png",
+            "blue": "dxRating/blue.png",
+            "green": "dxRating/green.png",
+            "yellow": "dxRating/yellow.png",
+            "red": "dxRating/red.png",
+            "purple": "dxRating/purple.png",
+            "bronze": "dxRating/bronze.png",
+            "silver": "dxRating/silver.png",
+            "gold": "dxRating/gold.png",
+            "platinum": "dxRating/platinum.png",
+            "rainbow": "dxRating/rainbow.png"
+        },
+        "dxRatingNumberMap": "dxRatingNumberMap.png",
+        "profile": {
+            "nameplate": "nameplate.png",
+            "icon": "icon.png"
+        }
+    },
+    "elements": [
+        {
+            "type": "image",
+            "x": -763,
+            "y": 0,
+            "width": 3086,
+            "height": 2315,
+            "path": "background.png"
+        },
+        {
+            "type": "image",
+            "x": 980,
+            "y": 175,
+            "width": 600,
+            "height": 503,
+            "path": "chara.png"
+        },
+        {
+            "type": "image",
+            "x": 130,
+            "y": 50,
+            "width": 300,
+            "height": 132,
+            "path": "laundry.png"
+        },
+        {
+            "type": "image",
+            "x": 105,
+            "y": 100,
+            "width": 450,
+            "height": 267,
+            "path": "logo.png"
+        },
+        {
+            "type": "score-grid",
+            "x": 40,
+            "y": 470,
+            "horizontalSize": 5,
+            "verticalSize": 3,
+            "region": "new",
+            "index": 0,
+            "scoreBubble": {
+                "width": 280,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "remaster": "#DDBDF5",
+                    "utage": "#70E262"
+                }
+            }
+        },
+        {
+            "type": "score-grid",
+            "x": 40,
+            "y": 1075,
+            "horizontalSize": 5,
+            "verticalSize": 7,
+            "region": "old",
+            "index": 0,
+            "scoreBubble": {
+                "width": 280,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "remaster": "#DDBDF5",
+                    "utage": "#70E262"
+                }
+            }
+        },
+        {
+            "type": "profile",
+            "x": 580,
+            "y": 145,
+            "height": 150
+        }
+    ]
+}

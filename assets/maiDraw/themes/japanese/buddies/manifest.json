@@ -1,0 +1,143 @@
+{
+    "displayName": "maimai でらっくす BUDDiES, 16:9",
+    "name": "jp-buddies-landscape",
+    "width": 2560,
+    "height": 1440,
+    "sprites": {
+        "achievement": {
+            "d": "achievement/d.png",
+            "c": "achievement/c.png",
+            "b": "achievement/b.png",
+            "bb": "achievement/bb.png",
+            "bbb": "achievement/bbb.png",
+            "a": "achievement/a.png",
+            "aa": "achievement/aa.png",
+            "aaa": "achievement/aaa.png",
+            "s": "achievement/s.png",
+            "sp": "achievement/sp.png",
+            "ss": "achievement/ss.png",
+            "ssp": "achievement/ssp.png",
+            "sss": "achievement/sss.png",
+            "sssp": "achievement/sssp.png"
+        },
+        "mode": {
+            "standard": "mode/standard.png",
+            "dx": "mode/dx.png"
+        },
+        "milestone": {
+            "ap": "milestone/ap.png",
+            "app": "milestone/app.png",
+            "fc": "milestone/fc.png",
+            "fcp": "milestone/fcp.png",
+            "fdx": "milestone/fdx.png",
+            "fdxp": "milestone/fdxp.png",
+            "fs": "milestone/fs.png",
+            "fsp": "milestone/fsp.png",
+            "sync": "milestone/sync.png",
+            "none": "milestone/none.png"
+        },
+        "dxRating": {
+            "white": "dxRating/white.png",
+            "blue": "dxRating/blue.png",
+            "green": "dxRating/green.png",
+            "yellow": "dxRating/yellow.png",
+            "red": "dxRating/red.png",
+            "purple": "dxRating/purple.png",
+            "bronze": "dxRating/bronze.png",
+            "silver": "dxRating/silver.png",
+            "gold": "dxRating/gold.png",
+            "platinum": "dxRating/platinum.png",
+            "rainbow": "dxRating/rainbow.png"
+        },
+        "profile": {
+            "nameplate": "nameplate.png",
+            "icon": "icon.png"
+        }
+    },
+    "elements": [
+        {
+            "type": "image",
+            "x": 0,
+            "y": -480,
+            "width": 2560,
+            "height": 1920,
+            "path": "background.png"
+        },
+        {
+            "type": "image",
+            "x": 570,
+            "y": 70,
+            "width": 468,
+            "height": 643,
+            "path": "chara.png"
+        },
+        {
+            "type": "image",
+            "x": 300,
+            "y": 30,
+            "width": 420,
+            "height": 153,
+            "path": "laundry.png"
+        },
+        {
+            "type": "image",
+            "x": 285,
+            "y": 80,
+            "width": 450,
+            "height": 265,
+            "path": "logo.png"
+        },
+        {
+            "type": "score-grid",
+            "x": 70,
+            "y": 500,
+            "horizontalSize": 3,
+            "verticalSize": 5,
+            "region": "new",
+            "index": 0,
+            "scoreBubble": {
+                "width": 280,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "remaster": "#DDBDF5",
+                    "utage": "#70E262"
+                }
+            }
+        },
+        {
+            "type": "score-grid",
+            "x": 1010,
+            "y": 150,
+            "horizontalSize": 5,
+            "verticalSize": 7,
+            "region": "old",
+            "index": 0,
+            "scoreBubble": {
+                "width": 280,
+                "height": 155,
+                "margin": 10,
+                "gap": 20,
+                "color": {
+                    "basic": "#70E262",
+                    "advanced": "#FFBB00",
+                    "expert": "#FF4A5A",
+                    "master": "#A04FDA",
+                    "remaster": "#DDBDF5",
+                    "utage": "#70E262"
+                }
+            }
+        },
+        {
+            "type": "profile",
+            "x": 110,
+            "y": 345,
+            "height": 129
+        }
+    ]
+}
