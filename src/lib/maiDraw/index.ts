@@ -1216,7 +1216,7 @@ export class MaiDraw {
             return fs.readFileSync(localFilePath);
         }
         // return null;
-        console.log(`Downloading jacket ${id}`);
+        // console.log(`Downloading jacket ${id}`);
         return await axios
             .get(`https://assets2.lxns.net/maimai/jacket/${id}.png`, {
                 responseType: "arraybuffer",
