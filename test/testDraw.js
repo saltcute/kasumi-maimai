@@ -2,7 +2,7 @@ const sharp = require("sharp");
 
 (async () => {
     const { MaiDraw } = require("../dist/lib/maiDraw/index");
-    const maiDraw = new MaiDraw("/home/xuanjiap/apps/maimai-songs-database");
+    const maiDraw = new MaiDraw("../maimai-songs-database");
     const fs = require("fs");
     const result = await maiDraw.draw(
         "SALTCUTE",
