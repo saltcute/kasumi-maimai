@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import { Cache } from "memory-cache";
+import { IChart } from "../maiDraw/type";
 
 export class LXNS {
     private cache = new Cache<string, object>();
@@ -52,6 +53,59 @@ export class LXNS {
         )) as unknown as LXNS.ISongListResponse;
         this.cache.put("lxns-songList", res, 1000 * 60 * 60);
         return res;
+    }
+    async getSaltChartList(): Promise<IChart[]> {
+        const songList = await this.getSongList();
+        const std: IChart[] = songList.songs.flatMap((song) => {
+            return song.difficulties.standard.map((chart) => {
+                return {
+                    id: song.id,
+                    name: song.title,
+                    level: chart.level_value,
+                    difficulty: chart.level_value,
+                    maxDxScore: (chart.notes?.total ?? 0) * 3,
+                };
+            });
+        });
+        const dx: IChart[] = songList.songs.flatMap((song) => {
+            return song.difficulties.dx.map((chart) => {
+                return {
+                    id: song.id + 100000,
+                    name: song.title,
+                    level: chart.level_value,
+                    difficulty: chart.level_value,
+                    maxDxScore: (chart.notes?.total ?? 0) * 3,
+                };
+            });
+        });
+        const utage: IChart[] = songList.songs
+            .flatMap((song) => {
+                return song.difficulties.utage?.map((chart) => {
+                    if (chart.is_buddy) {
+                        return {
+                            id: song.id,
+                            name: song.title,
+                            level: chart.level_value,
+                            difficulty: chart.level_value,
+                            maxDxScore:
+                                ((chart.notes?.left.total ?? 0) +
+                                    (chart.notes?.right.total ?? 0)) *
+                                3,
+                        };
+                    } else {
+                        return {
+                            id: song.id + 100000,
+                            name: song.title,
+                            level: chart.level_value,
+                            difficulty: chart.level_value,
+                            maxDxScore: (chart.notes?.total ?? 0) * 3,
+                        };
+                    }
+                });
+            })
+            .filter((v) => v !== undefined);
+
+        return [...std, ...dx, ...utage];
     }
 }
 

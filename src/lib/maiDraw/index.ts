@@ -5,6 +5,7 @@ import {
     EComboTypes,
     EDifficulty,
     ESyncTypes,
+    IChart,
     IScore,
     IThemeManifest,
     IThemeScoreElement,
@@ -73,11 +74,14 @@ export class MaiDraw {
         return upath.join(__dirname, "..", "..", "..", "assets", "maiDraw");
     }
 
-    constructor() {
-        // this.loadTheme("themes/japanese/buddies");
-        this.loadTheme("themes/japanese/buddiesPlusLandscape");
-        // this.loadTheme("themes/japanese/buddiesPlusPortrait");
-
+    constructor(private localDatabasePath: string = "") {
+        const loadThemeResult = this.loadTheme("themes/chinese/2024");
+        // const loadThemeResult = this.loadTheme("themes/japanese/buddies");
+        // const loadThemeResult = this.loadTheme("themes/japanese/buddiesPlusLandscape");
+        // const loadThemeResult = this.loadTheme("themes/japanese/buddiesPlusPortrait");
+        if (!loadThemeResult) {
+            console.error("Failed to load theme.");
+        }
         registerFont(
             upath.join(
                 this.assetsPath,
@@ -878,9 +882,9 @@ export class MaiDraw {
                                         mode.src = this.getThemeFile(
                                             curScore.chart.id > 10000
                                                 ? this.currentTheme.sprites.mode
-                                                      .standard
-                                                : this.currentTheme.sprites.mode
                                                       .dx
+                                                : this.currentTheme.sprites.mode
+                                                      .standard
                                         );
                                         ctx.drawImage(
                                             mode,
@@ -946,10 +950,7 @@ export class MaiDraw {
                                                 .hexa()
                                         );
 
-                                        if (
-                                            curScore.dxScore &&
-                                            curScore.chart.maxDxScore
-                                        ) {
+                                        if (curScore.chart.maxDxScore) {
                                             drawText(
                                                 ctx,
                                                 `${curScore.dxScore}/${curScore.chart.maxDxScore}`,
@@ -1204,8 +1205,18 @@ export class MaiDraw {
         }
     }
     private async downloadJacket(id: number): Promise<Buffer | null> {
-        // return null;
         if (id > 10000) id -= 10000;
+        const localFilePath = upath.join(
+            this.localDatabasePath,
+            "assets",
+            "jackets",
+            `${id.toString().padStart(6, "0")}.png`
+        );
+        if (fs.existsSync(localFilePath)) {
+            return fs.readFileSync(localFilePath);
+        }
+        // return null;
+        console.log(`Downloading jacket ${id}`);
         return await axios
             .get(`https://assets2.lxns.net/maimai/jacket/${id}.png`, {
                 responseType: "arraybuffer",
@@ -1213,7 +1224,17 @@ export class MaiDraw {
             .then((res) => res.data)
             .catch((e) => null);
     }
+    getLocalChart(id: number, difficulty: EDifficulty): IChart | null {
+        const localFilePath = upath.join(
+            this.localDatabasePath,
+            "assets",
+            "charts",
+            `${id.toString().padStart(6, "0")}`,
+            `${difficulty}.json`
+        );
+        if (fs.existsSync(localFilePath)) {
+            return JSON.parse(fs.readFileSync(localFilePath, "utf-8"));
+        }
+        return null;
+    }
 }
-
-const maiDraw = new MaiDraw();
-export default maiDraw;

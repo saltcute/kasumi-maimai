@@ -4,6 +4,7 @@ import {
     EComboTypes,
     EDifficulty,
     ESyncTypes,
+    IChart,
     IScore,
 } from "../maiDraw/type";
 import { LXNS } from "../lxns";
@@ -14,7 +15,7 @@ export namespace DivingFish {
         ds: number;
         dxScore: number;
         fc: "" | "fc" | "fcp" | "ap" | "app";
-        fs: "" | "sync" | "fs" | "fsp" | "fdx" | "fdxp";
+        fs: "" | "sync" | "fs" | "fsp" | "fsd" | "fsdp";
         level: string;
         level_index: number;
         level_label: string;
@@ -68,67 +69,37 @@ export class DivingFish {
     }
     static async toSalt(
         scores: DivingFish.IPlayResult[],
-        songList: LXNS.ISongListResponse
+        charts: IChart[]
     ): Promise<IScore[]> {
         return scores.map((score) => {
             return {
-                chart: {
-                    id: score.song_id,
-                    name: score.title,
-                    difficulty: (() => {
-                        switch (score.level_index) {
-                            case 1:
-                                return EDifficulty.ADVANCED;
-                            case 2:
-                                return EDifficulty.EXPERT;
-                            case 3:
-                                return EDifficulty.MASTER;
-                            case 4:
-                                return EDifficulty.REMASTER;
-                            case 5:
-                                return EDifficulty.UTAGE;
-                            default:
-                                return EDifficulty.BASIC;
-                        }
-                    })(),
-                    level: score.ds,
-                    maxDxScore: (() => {
-                        const song = songList.songs.find(
-                            (song) => song.id === score.song_id
-                        );
-                        if (!song) return 0;
-                        if (score.type === "SD")
-                            return (
-                                (song.difficulties.standard[score.level_index]
-                                    ?.notes?.total ?? 0) * 3
-                            );
-                        else if (score.type === "DX")
-                            return (
-                                (song.difficulties.dx[score.level_index]?.notes
-                                    ?.total ?? 0) * 3
-                            );
-                        else if (score.type === "UT") {
-                            if (song.difficulties.utage) {
-                                const difficulty =
-                                    song.difficulties.utage[score.level_index];
-                                if (difficulty?.is_buddy) {
-                                    return (
-                                        ((difficulty.notes?.left.total ?? 0) +
-                                            (difficulty.notes?.right.total ??
-                                                0)) *
-                                        3
-                                    );
-                                } else
-                                    return (
-                                        (song.difficulties.dx[score.level_index]
-                                            .notes?.total ?? 0) * 3
-                                    );
-                            } else {
-                                return 0;
+                chart: (() => {
+                    const chart = charts.find(
+                        (chart) => chart.id === score.song_id
+                    );
+                    return {
+                        id: score.song_id,
+                        name: score.title,
+                        difficulty: (() => {
+                            switch (score.level_index) {
+                                case 1:
+                                    return EDifficulty.ADVANCED;
+                                case 2:
+                                    return EDifficulty.EXPERT;
+                                case 3:
+                                    return EDifficulty.MASTER;
+                                case 4:
+                                    return EDifficulty.REMASTER;
+                                case 5:
+                                    return EDifficulty.UTAGE;
+                                default:
+                                    return EDifficulty.BASIC;
                             }
-                        } else return 0;
-                    })(),
-                },
+                        })(),
+                        level: score.ds,
+                        maxDxScore: chart?.maxDxScore || 0,
+                    };
+                })(),
                 combo: (() => {
                     switch (score.fc) {
                         case "fc":
@@ -145,25 +116,23 @@ export class DivingFish {
                 })(),
                 sync: (() => {
                     switch (score.fs) {
-                        case "":
-                            return ESyncTypes.NONE;
                         case "sync":
                             return ESyncTypes.SYNC_PLAY;
                         case "fs":
                             return ESyncTypes.FULL_SYNC;
                         case "fsp":
                             return ESyncTypes.FULL_SYNC_PLUS;
-                        case "fdx":
+                        case "fsd":
                             return ESyncTypes.FULL_SYNC_DX;
-                        case "fdxp":
+                        case "fsdp":
                             return ESyncTypes.FULL_SYNC_DX_PLUS;
+                        default:
+                            return ESyncTypes.NONE;
                     }
                 })(),
                 achievement: score.achievements,
                 achievementRank: (() => {
                     switch (score.rate) {
-                        case "d":
-                            return EAchievementTypes.D;
                         case "c":
                             return EAchievementTypes.C;
                         case "b":
@@ -190,6 +159,8 @@ export class DivingFish {
                             return EAchievementTypes.SSS;
                         case "sssp":
                             return EAchievementTypes.SSSP;
+                        default:
+                            return EAchievementTypes.D;
                     }
                 })(),
                 dxRating: score.ra,
