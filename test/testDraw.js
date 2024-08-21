@@ -1,7 +1,8 @@
 const sharp = require("sharp");
 
 (async () => {
-    const maiDraw = require("../dist/lib/maiDraw/index").default;
+    const { MaiDraw } = require("../dist/lib/maiDraw/index");
+    const maiDraw = new MaiDraw("/home/xuanjiap/apps/maimai-songs-database");
     const fs = require("fs");
     const result = await maiDraw.draw(
         "SALTCUTE",
@@ -16,7 +17,7 @@ const sharp = require("sharp");
                     maxDxScore: 6666,
                 },
                 combo: 2,
-                sync: 1,
+                sync: 3,
                 achievement: 100.5466,
                 dxScore: 1636,
                 dxRating: 310.6656,
@@ -30,7 +31,7 @@ const sharp = require("sharp");
                     maxDxScore: 6666,
                 },
                 combo: 1,
-                sync: 0,
+                sync: 4,
                 achievement: 100.5283,
                 dxScore: 1620,
                 dxRating: 303.912,
@@ -44,7 +45,7 @@ const sharp = require("sharp");
                     maxDxScore: 6666,
                 },
                 combo: 0,
-                sync: 0,
+                sync: 5,
                 achievement: 100.0777,
                 dxScore: 1693,
                 dxRating: 296.14992984,
