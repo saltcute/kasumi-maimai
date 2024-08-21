@@ -56,14 +56,8 @@ export default class Best50Command extends BaseCommand<Kasumi<CustomStorage>> {
         const result = await this.maiDraw.draw(
             data.nickname,
             data.rating,
-            await DivingFish.toSalt(
-                data.charts.dx,
-                await this.lxns.getSaltChartList()
-            ),
-            await DivingFish.toSalt(
-                data.charts.sd,
-                await this.lxns.getSaltChartList()
-            )
+            await DivingFish.toSalt(data.charts.dx, chartList),
+            await DivingFish.toSalt(data.charts.sd, chartList)
         );
         if (result) {
             const { data, err } = await this.client.API.asset.create(result);
