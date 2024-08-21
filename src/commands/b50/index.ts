@@ -36,7 +36,7 @@ export default class Best50Command extends BaseCommand<Kasumi<CustomStorage>> {
         if (!username) return session.reply("请输入用户名");
         const data = await DivingFish.getPlayerBest50(username);
         if (!data) return session.reply("获取用户资料失败");
-        session.send("正在生成图片...");
+        const { data: msg } = await session.send("正在生成图片...");
         let chartList: IChart[];
         if (
             this.client.config.getSync("maimai::config.useLocalDatabase") &&
@@ -62,6 +62,7 @@ export default class Best50Command extends BaseCommand<Kasumi<CustomStorage>> {
         if (result) {
             const { data, err } = await this.client.API.asset.create(result);
             if (err) return session.reply("上传图片失败");
+            if (msg) await this.client.API.message.delete(msg.msg_id);
             return this.client.API.message.create(
                 MessageType.ImageMessage,
                 session.channelId,
