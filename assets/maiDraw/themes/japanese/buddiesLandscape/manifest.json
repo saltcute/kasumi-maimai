@@ -1,8 +1,8 @@
 {
-    "displayName": "舞萌DX 2024, Portrait",
-    "name": "cn-2024-portrait",
-    "width": 1560,
-    "height": 2315,
+    "displayName": "maimai でらっくす BUDDiES, Landscape",
+    "name": "jp-buddies-landscape",
+    "width": 2560,
+    "height": 1440,
     "sprites": {
         "achievement": {
             "d": "achievement/d.png",
@@ -74,8 +74,8 @@
         },
         {
             "type": "image",
-            "x": 140,
-            "y": 0,
+            "x": 130,
+            "y": 50,
             "width": 362,
             "height": 132,
             "path": "laundry.png"
@@ -83,7 +83,7 @@
         {
             "type": "image",
             "x": 105,
-            "y": 50,
+            "y": 99,
             "width": 450,
             "height": 450,
             "path": "logo.png"
