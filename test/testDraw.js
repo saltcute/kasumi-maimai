@@ -713,7 +713,10 @@ const upath = require("upath");
             },
         ],
         {
-            scale: 2
+            scale: 2,
+            // theme: "jp-buddies-portrait"
+            theme: "cn-2024-portrait"
+            // theme: "cn-2024-landscape"
         }
     );
     if (result) fs.writeFileSync(upath.join(__dirname, "test.webp"), await sharp(result).webp({
