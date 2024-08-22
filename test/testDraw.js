@@ -1,4 +1,5 @@
 const sharp = require("sharp");
+const upath = require("upath");
 
 (async () => {
     const { MaiDraw } = require("../dist/lib/maiDraw/index");
@@ -715,7 +716,7 @@ const sharp = require("sharp");
             scale: 2
         }
     );
-    if (result) fs.writeFileSync("test.webp", await sharp(result).webp({
+    if (result) fs.writeFileSync(upath.join(__dirname, "test.webp"), await sharp(result).webp({
         quality: 60,
     }).toBuffer());
 })();
