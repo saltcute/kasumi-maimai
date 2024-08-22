@@ -22,6 +22,7 @@ import axios from "axios";
 import Color from "color";
 import sharp from "sharp";
 import { Cache } from "memory-cache";
+import { globSync } from "glob";
 
 class HalfFullWidthConvert {
     private static readonly charsets = {
@@ -73,12 +74,24 @@ export class MaiDraw {
     private get assetsPath() {
         return upath.join(__dirname, "..", "..", "..", "assets", "maiDraw");
     }
-
+    private themes: Record<string, string> = {};
+    hasTheme(name: string): boolean {
+        return !!this.themes[name];
+    }
     constructor(private localDatabasePath: string = "") {
-        const loadThemeResult = this.loadTheme("themes/chinese/2024");
-        // const loadThemeResult = this.loadTheme("themes/japanese/buddies");
-        // const loadThemeResult = this.loadTheme("themes/japanese/buddiesPlusLandscape");
-        // const loadThemeResult = this.loadTheme("themes/japanese/buddiesPlusPortrait");
+        const manifests = globSync(
+            upath.join(this.assetsPath, "themes", "**", "manifest.json")
+        );
+        for (const manifestPath of manifests) {
+            const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
+            if (this.validateManifest(manifest, upath.dirname(manifestPath))) {
+                this.themes[manifest.name] = upath.dirname(manifestPath);
+            }
+        }
+        const loadThemeResult = this.loadTheme("cn-2024-landscape");
+        // const loadThemeResult = this.loadTheme("jp-buddiesplus-portrait");
+        // const loadThemeResult = this.loadTheme("jp-buddiesplus-landscape");
+        // const loadThemeResult = this.loadTheme("jp-buddies-landscape");
         if (!loadThemeResult) {
             console.error("Failed to load theme.");
         }
@@ -253,7 +266,11 @@ export class MaiDraw {
     private currentTheme: IThemeManifest | null = null;
     private currentThemePath: string | null = null;
     loadTheme(path: string): boolean {
-        path = upath.join(this.assetsPath, path);
+        if (
+            !fs.existsSync(upath.join(this.assetsPath, path, "manifest.json"))
+        ) {
+            path = this.themes[path] ?? "";
+        } else path = upath.join(this.assetsPath, path);
         if (fs.existsSync(upath.join(path, "manifest.json"))) {
             const manifest = JSON.parse(
                 fs.readFileSync(upath.join(path, "manifest.json"), "utf-8")
@@ -879,23 +896,35 @@ export class MaiDraw {
                                     /** Begin Chart Mode Draw */
                                     {
                                         const mode = new Image();
-                                        mode.src = this.getThemeFile(
-                                            curScore.chart.id > 10000
-                                                ? this.currentTheme.sprites.mode
-                                                      .dx
-                                                : this.currentTheme.sprites.mode
-                                                      .standard
-                                        );
+                                        const chartModeBadgeImg =
+                                            this.getThemeFile(
+                                                curScore.chart.id > 10000
+                                                    ? this.currentTheme.sprites
+                                                          .mode.dx
+                                                    : this.currentTheme.sprites
+                                                          .mode.standard
+                                            );
+                                        const { width, height } =
+                                            await sharp(
+                                                chartModeBadgeImg
+                                            ).metadata();
+                                        const aspectRatio =
+                                            (width ?? 0) / (height ?? 1) || 3;
+                                        mode.src = chartModeBadgeImg;
+                                        const drawHeight = (jacketSize * 6) / 8;
                                         ctx.drawImage(
                                             mode,
-                                            curx + jacketSize / 8,
+                                            curx +
+                                                ((jacketSize * 7) / 8 -
+                                                    drawHeight) /
+                                                    2,
                                             cury +
                                                 element.scoreBubble.margin +
                                                 element.scoreBubble.height *
                                                     0.806 *
                                                     0.02,
-                                            (jacketSize * 5) / 8,
-                                            (jacketSize * 5) / 8 / 3
+                                            drawHeight,
+                                            drawHeight / aspectRatio
                                         );
                                     }
                                     /** End Chart Mode Draw */
