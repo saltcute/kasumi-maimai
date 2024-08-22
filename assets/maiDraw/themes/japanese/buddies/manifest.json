@@ -49,6 +49,7 @@
             "platinum": "dxRating/platinum.png",
             "rainbow": "dxRating/rainbow.png"
         },
+        "dxRatingNumberMap": "dxRatingNumberMap.png",
         "profile": {
             "nameplate": "nameplate.png",
             "icon": "icon.png"
@@ -84,7 +85,7 @@
             "x": 285,
             "y": 80,
             "width": 450,
-            "height": 265,
+            "height": 267,
             "path": "logo.png"
         },
         {
