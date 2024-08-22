@@ -263,9 +263,20 @@ export class MaiDraw {
             return true;
         } else return false;
     }
-    private currentTheme: IThemeManifest | null = null;
-    private currentThemePath: string | null = null;
+    private primaryTheme: IThemeManifest | null = null;
+    private primaryThemePath: string | null = null;
     loadTheme(path: string): boolean {
+        const theme = this.getTheme(path);
+        if (theme) {
+            this.primaryTheme = theme.manifest;
+            this.primaryThemePath = theme.path;
+            return true;
+        } else return false;
+    }
+    private getTheme(path: string): {
+        manifest: IThemeManifest;
+        path: string;
+    } | null {
         if (
             !fs.existsSync(upath.join(this.assetsPath, path, "manifest.json"))
         ) {
@@ -276,19 +287,19 @@ export class MaiDraw {
                 fs.readFileSync(upath.join(path, "manifest.json"), "utf-8")
             );
             if (this.validateManifest(manifest, path)) {
-                this.currentTheme = manifest;
-                this.currentThemePath = path;
-                return true;
+                return { manifest, path };
             }
         }
-        return false;
+        return null;
     }
-    private getThemeFile(path: string): Buffer {
+    private getThemeFile(path: string, themePath: string): Buffer {
         if (
             typeof path == "string" &&
-            fs.existsSync(upath.join(this.currentThemePath, path))
+            fs.existsSync(upath.join(themePath ?? this.primaryThemePath, path))
         )
-            return fs.readFileSync(upath.join(this.currentThemePath, path));
+            return fs.readFileSync(
+                upath.join(themePath ?? this.primaryThemePath, path)
+            );
         else return Buffer.from([]);
     }
     async draw(
@@ -296,7 +307,7 @@ export class MaiDraw {
         rating: number,
         newScores: IScore[],
         oldScores: IScore[],
-        options?: { scale?: number }
+        options?: { scale?: number; theme?: string }
     ): Promise<Buffer | null> {
         function drawText(
             ctx: CanvasRenderingContext2D,
@@ -354,19 +365,31 @@ export class MaiDraw {
             ...newScores.map((v) => v.chart.id),
             ...oldScores.map((v) => v.chart.id),
         ]);
-        if (this.currentTheme && this.currentThemePath) {
+        let currentTheme = this.primaryTheme,
+            currentThemePath = this.primaryThemePath;
+        if (options?.theme) {
+            const theme = this.getTheme(options.theme);
+            if (theme) {
+                currentTheme = theme.manifest;
+                currentThemePath = theme.path;
+            }
+        }
+        if (currentTheme && currentThemePath) {
             const canvas = new Canvas(
-                this.currentTheme.width * (options?.scale ?? 1),
-                this.currentTheme.height * (options?.scale ?? 1)
+                currentTheme.width * (options?.scale ?? 1),
+                currentTheme.height * (options?.scale ?? 1)
             );
             const ctx = canvas.getContext("2d");
             if (options?.scale) ctx.scale(options.scale, options.scale);
             ctx.imageSmoothingEnabled = true;
-            for (const element of this.currentTheme.elements) {
+            for (const element of currentTheme.elements) {
                 switch (element.type) {
                     case "image": {
                         const img = new Image();
-                        img.src = this.getThemeFile(element.path);
+                        img.src = this.getThemeFile(
+                            element.path,
+                            currentThemePath
+                        );
                         ctx.drawImage(
                             img,
                             element.x,
@@ -661,86 +684,100 @@ export class MaiDraw {
                                         switch (curScore.achievementRank) {
                                             case EAchievementTypes.D:
                                                 rankImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .achievement.d
+                                                    currentTheme.sprites
+                                                        .achievement.d,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case EAchievementTypes.C:
                                                 rankImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .achievement.c
+                                                    currentTheme.sprites
+                                                        .achievement.c,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case EAchievementTypes.B:
                                                 rankImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .achievement.b
+                                                    currentTheme.sprites
+                                                        .achievement.b,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case EAchievementTypes.BB:
                                                 rankImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .achievement.bb
+                                                    currentTheme.sprites
+                                                        .achievement.bb,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case EAchievementTypes.BBB:
                                                 rankImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .achievement.bbb
+                                                    currentTheme.sprites
+                                                        .achievement.bbb,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case EAchievementTypes.A:
                                                 rankImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .achievement.a
+                                                    currentTheme.sprites
+                                                        .achievement.a,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case EAchievementTypes.AA:
                                                 rankImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .achievement.aa
+                                                    currentTheme.sprites
+                                                        .achievement.aa,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case EAchievementTypes.AAA:
                                                 rankImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .achievement.aaa
+                                                    currentTheme.sprites
+                                                        .achievement.aaa,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case EAchievementTypes.S:
                                                 rankImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .achievement.s
+                                                    currentTheme.sprites
+                                                        .achievement.s,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case EAchievementTypes.SP:
                                                 rankImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .achievement.sp
+                                                    currentTheme.sprites
+                                                        .achievement.sp,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case EAchievementTypes.SS:
                                                 rankImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .achievement.ss
+                                                    currentTheme.sprites
+                                                        .achievement.ss,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case EAchievementTypes.SSP:
                                                 rankImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .achievement.ssp
+                                                    currentTheme.sprites
+                                                        .achievement.ssp,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case EAchievementTypes.SSS:
                                                 rankImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .achievement.sss
+                                                    currentTheme.sprites
+                                                        .achievement.sss,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             default:
                                                 rankImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .achievement.sssp
+                                                    currentTheme.sprites
+                                                        .achievement.sssp,
+                                                    currentThemePath
                                                 );
                                         }
                                         const img = new Image();
@@ -773,70 +810,81 @@ export class MaiDraw {
                                         switch (curScore.combo) {
                                             case EComboTypes.NONE:
                                                 comboImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .milestone.none
+                                                    currentTheme.sprites
+                                                        .milestone.none,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case EComboTypes.FULL_COMBO:
                                                 comboImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .milestone.fc
+                                                    currentTheme.sprites
+                                                        .milestone.fc,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case EComboTypes.FULL_COMBO_PLUS:
                                                 comboImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .milestone.fcp
+                                                    currentTheme.sprites
+                                                        .milestone.fcp,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case EComboTypes.ALL_PERFECT:
                                                 comboImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .milestone.ap
+                                                    currentTheme.sprites
+                                                        .milestone.ap,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case EComboTypes.ALL_PERFECT_PLUS:
                                                 comboImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .milestone.app
+                                                    currentTheme.sprites
+                                                        .milestone.app,
+                                                    currentThemePath
                                                 );
                                                 break;
                                         }
                                         switch (curScore.sync) {
                                             case ESyncTypes.NONE:
                                                 syncImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .milestone.none
+                                                    currentTheme.sprites
+                                                        .milestone.none,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case ESyncTypes.SYNC_PLAY:
                                                 syncImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .milestone.sync
+                                                    currentTheme.sprites
+                                                        .milestone.sync,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case ESyncTypes.FULL_SYNC:
                                                 syncImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .milestone.fs
+                                                    currentTheme.sprites
+                                                        .milestone.fs,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case ESyncTypes.FULL_SYNC_PLUS:
                                                 syncImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .milestone.fsp
+                                                    currentTheme.sprites
+                                                        .milestone.fsp,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case ESyncTypes.FULL_SYNC_DX:
                                                 syncImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .milestone.fdx
+                                                    currentTheme.sprites
+                                                        .milestone.fdx,
+                                                    currentThemePath
                                                 );
                                                 break;
                                             case ESyncTypes.FULL_SYNC_DX_PLUS:
                                                 syncImg = this.getThemeFile(
-                                                    this.currentTheme.sprites
-                                                        .milestone.fdxp
+                                                    currentTheme.sprites
+                                                        .milestone.fdxp,
+                                                    currentThemePath
                                                 );
                                                 break;
                                         }
@@ -899,10 +947,11 @@ export class MaiDraw {
                                         const chartModeBadgeImg =
                                             this.getThemeFile(
                                                 curScore.chart.id > 10000
-                                                    ? this.currentTheme.sprites
-                                                          .mode.dx
-                                                    : this.currentTheme.sprites
-                                                          .mode.standard
+                                                    ? currentTheme.sprites.mode
+                                                          .dx
+                                                    : currentTheme.sprites.mode
+                                                          .standard,
+                                                currentThemePath
                                             );
                                         const { width, height } =
                                             await sharp(
@@ -1016,7 +1065,8 @@ export class MaiDraw {
                     case "profile": {
                         const nameplate = new Image();
                         nameplate.src = this.getThemeFile(
-                            this.currentTheme.sprites.profile.nameplate
+                            currentTheme.sprites.profile.nameplate,
+                            currentThemePath
                         );
                         ctx.drawImage(
                             nameplate,
@@ -1027,7 +1077,8 @@ export class MaiDraw {
                         );
                         const icon = new Image();
                         icon.src = this.getThemeFile(
-                            this.currentTheme.sprites.profile.icon
+                            currentTheme.sprites.profile.icon,
+                            currentThemePath
                         );
                         ctx.drawImage(
                             icon,
@@ -1041,67 +1092,78 @@ export class MaiDraw {
                         switch (true) {
                             case rating > 15000: {
                                 dxRatingImg = this.getThemeFile(
-                                    this.currentTheme.sprites.dxRating.rainbow
+                                    currentTheme.sprites.dxRating.rainbow,
+                                    currentThemePath
                                 );
                                 break;
                             }
                             case rating > 14500: {
                                 dxRatingImg = this.getThemeFile(
-                                    this.currentTheme.sprites.dxRating.platinum
+                                    currentTheme.sprites.dxRating.platinum,
+                                    currentThemePath
                                 );
                                 break;
                             }
                             case rating > 14000: {
                                 dxRatingImg = this.getThemeFile(
-                                    this.currentTheme.sprites.dxRating.gold
+                                    currentTheme.sprites.dxRating.gold,
+                                    currentThemePath
                                 );
                                 break;
                             }
                             case rating > 13000: {
                                 dxRatingImg = this.getThemeFile(
-                                    this.currentTheme.sprites.dxRating.silver
+                                    currentTheme.sprites.dxRating.silver,
+                                    currentThemePath
                                 );
                                 break;
                             }
                             case rating > 12000: {
                                 dxRatingImg = this.getThemeFile(
-                                    this.currentTheme.sprites.dxRating.bronze
+                                    currentTheme.sprites.dxRating.bronze,
+                                    currentThemePath
                                 );
                                 break;
                             }
                             case rating > 10000: {
                                 dxRatingImg = this.getThemeFile(
-                                    this.currentTheme.sprites.dxRating.purple
+                                    currentTheme.sprites.dxRating.purple,
+                                    currentThemePath
                                 );
                                 break;
                             }
                             case rating > 8000: {
                                 dxRatingImg = this.getThemeFile(
-                                    this.currentTheme.sprites.dxRating.red
+                                    currentTheme.sprites.dxRating.red,
+                                    currentThemePath
                                 );
                                 break;
                             }
                             case rating > 6000: {
                                 dxRatingImg = this.getThemeFile(
-                                    this.currentTheme.sprites.dxRating.yellow
+                                    currentTheme.sprites.dxRating.yellow,
+                                    currentThemePath
                                 );
                                 break;
                             }
                             case rating > 4000: {
                                 dxRatingImg = this.getThemeFile(
-                                    this.currentTheme.sprites.dxRating.green
+                                    currentTheme.sprites.dxRating.green,
+                                    currentThemePath
                                 );
                                 break;
                             }
                             case rating > 2000: {
                                 dxRatingImg = this.getThemeFile(
-                                    this.currentTheme.sprites.dxRating.blue
+                                    currentTheme.sprites.dxRating.blue,
+                                    currentThemePath
                                 );
                                 break;
                             }
                             default: {
                                 dxRatingImg = this.getThemeFile(
-                                    this.currentTheme.sprites.dxRating.white
+                                    currentTheme.sprites.dxRating.white,
+                                    currentThemePath
                                 );
                                 break;
                             }
@@ -1128,8 +1190,13 @@ export class MaiDraw {
                         ctx.stroke();
                         ctx.fill();
 
-                        const ratingImgBuffer =
-                            await this.getRatingNumber(rating);
+                        const ratingImgBuffer = await this.getRatingNumber(
+                            rating,
+                            {
+                                manifest: currentTheme,
+                                path: currentThemePath,
+                            }
+                        );
                         if (ratingImgBuffer) {
                             const { width, height } =
                                 await sharp(ratingImgBuffer).metadata();
@@ -1169,7 +1236,13 @@ export class MaiDraw {
             return canvas.toBuffer();
         } else return null;
     }
-    private async getRatingNumber(num: number) {
+    private async getRatingNumber(
+        num: number,
+        theme: {
+            manifest: IThemeManifest;
+            path: string;
+        }
+    ) {
         async function getRaingDigit(
             map: Buffer,
             digit: number,
@@ -1186,9 +1259,10 @@ export class MaiDraw {
                 })
                 .toBuffer();
         }
-        if (this.currentTheme) {
+        if (theme.manifest) {
             const map = this.getThemeFile(
-                this.currentTheme.sprites.dxRatingNumberMap
+                theme.manifest.sprites.dxRatingNumberMap,
+                theme.path
             );
             const { width, height } = await sharp(map).metadata();
             if (!(width && height)) return null;
