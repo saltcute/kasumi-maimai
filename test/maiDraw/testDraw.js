@@ -736,6 +736,6 @@ const upath = require("upath");
         } else {
             console.log(`${theme} failed!`);
         }
-
     }
+    process.exit(0);
 })();
