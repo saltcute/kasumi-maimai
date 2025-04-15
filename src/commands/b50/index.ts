@@ -5,12 +5,14 @@ import Kasumi, {
     CommandFunction,
     MessageType,
 } from "kasumi.js";
-import { MaiDraw, LXNS, KamaiTachi, DivingFish } from "maidraw";
+import { MaiDraw } from "maidraw";
+import { DivingFish } from "maidraw/dist/mai/best50/lib/divingFish";
+import { KamaiTachi } from "maidraw/dist/mai/best50/lib/kamaiTachi";
+import { LXNS } from "maidraw/dist/mai/best50/lib/lxns";
 
 export default class Best50Command extends BaseCommand<Kasumi<CustomStorage>> {
     name = "b50";
     description = "查询 b50 图片";
-    maiDraw!: MaiDraw;
     lxns!: LXNS;
     kamaiTachi!: KamaiTachi;
     divingFish!: DivingFish;
@@ -18,19 +20,13 @@ export default class Best50Command extends BaseCommand<Kasumi<CustomStorage>> {
     constructor() {
         super();
         this.on("ready", () => {
-            this.maiDraw = new MaiDraw(
-                this.client.config.getSync("maimai::config.useLocalDatabase")
-                    ? this.client.config.getSync(
-                          "maimai::config.localDatabasePath"
-                      )
-                    : ""
-            );
-            this.lxns = new LXNS(
-                this.maiDraw,
-                this.client.config.getSync("maimai::lxns.token")
-            );
-            this.divingFish = new DivingFish(this.maiDraw);
-            this.kamaiTachi = new KamaiTachi(this.maiDraw);
+            this.lxns = new MaiDraw.Maimai.Best50.LXNS({
+                auth: this.client.config.getSync("maimai::lxns.token"),
+            });
+            this.divingFish = new MaiDraw.Maimai.Best50.DivingFish({
+                auth: this.client.config.getSync("maimai::divingFish.token"),
+            });
+            this.kamaiTachi = new MaiDraw.Maimai.Best50.KamaiTachi();
         });
     }
     func: CommandFunction<BaseSession, any> = async (session) => {
@@ -44,7 +40,7 @@ export default class Best50Command extends BaseCommand<Kasumi<CustomStorage>> {
             case "kamai":
             case "kamaitachi":
             case "tachi":
-                result = await this.maiDraw.drawWithScoreSource(
+                result = await MaiDraw.Maimai.Best50.drawWithScoreSource(
                     this.kamaiTachi,
                     username,
                     { theme }
@@ -53,7 +49,7 @@ export default class Best50Command extends BaseCommand<Kasumi<CustomStorage>> {
             case "divingfish":
             case "df":
             case "水鱼":
-                result = await this.maiDraw.drawWithScoreSource(
+                result = await MaiDraw.Maimai.Best50.drawWithScoreSource(
                     this.divingFish,
                     username,
                     { theme }
@@ -63,7 +59,7 @@ export default class Best50Command extends BaseCommand<Kasumi<CustomStorage>> {
             case "lx":
             case "落雪":
             default:
-                result = await this.maiDraw.drawWithScoreSource(
+                result = await MaiDraw.Maimai.Best50.drawWithScoreSource(
                     this.lxns,
                     username,
                     { theme }
