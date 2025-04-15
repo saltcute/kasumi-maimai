@@ -1,6 +1,6 @@
 {
   "name": "@saltcute/kasumi-maimai",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Kasumi module for maimai bot",
   "main": "dist/index.js",
   "scripts": {
