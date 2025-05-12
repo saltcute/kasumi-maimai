@@ -6,16 +6,13 @@ import Kasumi, {
     MessageType,
 } from "kasumi.js";
 import { MaiDraw } from "maidraw";
-import { DivingFish } from "maidraw/dist/mai/best50/lib/divingFish";
-import { KamaiTachi } from "maidraw/dist/mai/best50/lib/kamaiTachi";
-import { LXNS } from "maidraw/dist/mai/best50/lib/lxns";
 
 export default class Best50Command extends BaseCommand<Kasumi<CustomStorage>> {
     name = "b50";
     description = "查询 b50 图片";
-    lxns!: LXNS;
-    kamaiTachi!: KamaiTachi;
-    divingFish!: DivingFish;
+    lxns!: MaiDraw.Maimai.Best50.LXNS;
+    kamaiTachi!: MaiDraw.Maimai.Best50.KamaiTachi;
+    divingFish!: MaiDraw.Maimai.Best50.DivingFish;
 
     constructor() {
         super();
